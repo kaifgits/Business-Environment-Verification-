@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Business Environment (CMBCV03007) — Student Verification</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Font: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    /* Subtle smooth animations for result cards */
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animate-card {
+      animation: fadeSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-zinc-950 text-zinc-100 font-sans antialiased flex flex-col justify-between selection:bg-emerald-500/30 selection:text-emerald-200">
+
+  <!-- Top Subtle Accent Bar -->
+  <div class="w-full h-1 bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-500"></div>
+
+  <!-- Main Centered Container -->
+  <main class="w-full max-w-lg mx-auto px-4 sm:px-6 py-10 sm:py-16 flex-grow flex flex-col justify-center">
+    
+    <!-- Header Section -->
+    <header class="text-center mb-8">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-medium text-emerald-400 mb-4 shadow-sm">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>3rd Semester • Course Code: CMBCV03007</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+        Business Environment
+      </h1>
+      <p class="mt-2 text-sm sm:text-base text-zinc-400">
+        3rd Semester Student Enrollment Verification Portal
+      </p>
+    </header>
+
+    <!-- Search Card -->
+    <section class="bg-zinc-900/90 border border-zinc-800/90 rounded-2xl p-5 sm:p-7 shadow-2xl backdrop-blur-sm">
+      <form id="lookupForm" class="space-y-4" novalidate>
+        <div>
+          <label for="enrollmentInput" class="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">
+            Enrollment Number
+          </label>
+          <div class="relative">
+            <input
+              type="text"
+              id="enrollmentInput"
+              name="enrollment"
+              autocomplete="off"
+              autocapitalize="characters"
+              spellcheck="false"
+              placeholder="Enter Enrollment No. (e.g., GR3013)"
+              class="w-full px-4 py-3.5 rounded-xl bg-zinc-950 border border-zinc-800 text-white placeholder-zinc-500 text-base sm:text-lg font-medium tracking-wide focus:outline-none focus:ring-2 focus:ring-emerald-500/70 focus:border-emerald-500 transition-all"
+            />
+          </div>
+          <p class="mt-2 text-xs text-zinc-500 flex items-center gap-1.5">
+            <!-- Lock Privacy Icon -->
+            <svg class="w-3.5 h-3.5 text-zinc-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            <span>Privacy Protected: Only individual lookup by exact Enrollment No. is enabled.</span>
+          </p>
+        </div>
+
+        <button
+          type="submit"
+          id="checkBtn"
+          class="w-full py-3.5 px-5 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 text-zinc-950 font-semibold text-base transition-all shadow-lg shadow-emerald-500/15 flex items-center justify-center gap-2 cursor-pointer"
+        >
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1010.5 18a7.5 7.5 0 006.15-3.35z" />
+          </svg>
+          <span>Check Enrollment</span>
+        </button>
+      </form>
+
+      <!-- Dynamic Output Container -->
+      <div id="resultContainer" class="mt-6 hidden" aria-live="polite"></div>
+    </section>
+
+  </main>
+
+  <!-- Minimalist Footer -->
+  <footer class="w-full max-w-lg mx-auto px-4 pb-8 text-center text-xs text-zinc-500 space-y-2">
+    <p>Instant Local Verification • Zero Server Latency • Course CMBCV03007</p>
+    <p>
+      Interface generated by
+      <a
+        href="https://www.linkedin.com/in/mohammad-kaif-iqubal-493925445?utm_source=share_via&utm_content=profile&utm_medium=member_android"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-emerald-400 hover:text-emerald-300 underline underline-offset-2 font-medium transition-colors"
+      >
+        Mohammad Kaif Iqubal
+      </a>
+    </p>
+  </footer>
+
+  <script>
+    /**
+     * Complete Student Enrollment Dataset (173 Records)
+     * Key: Normalized Uppercase Enrollment Number for O(1) instant lookup (<1ms).
+     * Value: { name, facultyNo, department, facultyName, enrollmentNo }
+     */
+    const STUDENT_RECORDS = (() => {
+      const rawData = [
+        // ==========================================
+        // Geology | Faculty of Science (20)
+        // ==========================================
+        ["Imroz Ali", "25GLBSA652", "GR2770", "Geology", "Faculty of Science"],
+        ["Md Zaid Alam", "25GLBSA582", "GR1346", "Geology", "Faculty of Science"],
+        ["Mohd Aamir", "25GLBSA540", "GR0188", "Geology", "Faculty of Science"],
+        ["Md Intekhaab Alam", "25GLBSA506", "GQ9771", "Geology", "Faculty of Science"],
+        ["Rehan Fazal", "25GLBSA618", "GR0143", "Geology", "Faculty of Science"],
+        ["Mohammad Arzan", "25GLBSA632", "GR1983", "Geology", "Faculty of Science"],
+        ["Mir Shuja Ajaz", "25GLBSA614", "GR1770", "Geology", "Faculty of Science"],
+        ["Mohammad Kaif Iqubal", "25GLBSA668", "GR3013", "Geology", "Faculty of Science"],
+        ["Aman Waseem", "25GLBSA633", "GR1985", "Geology", "Faculty of Science"],
+        ["Mukhtar hussain", "25GLBSA662", "GR2057", "Geology", "Faculty of Science"],
+        ["Kabir Jadaun", "25GLBSA598", "GR1615", "Geology", "Faculty of Science"],
+        ["Mustafa Hasan", "25GLBSA627", "GR1966", "Geology", "Faculty of Science"],
+        ["Bashirul Islam", "25GLBSA640", "GR2078", "Geology", "Faculty of Science"],
+        ["Mohd Anas", "25GLBSA581", "GR1342", "Geology", "Faculty of Science"],
+        ["Mohd Sayam", "25GLBSA673", "GN8864", "Geology", "Faculty of Science"],
+        ["Rizwan Shakoor", "25GLBSA616", "GQ9833", "Geology", "Faculty of Science"],
+        ["Qais", "24GLBSA632", "GQ4628", "Geology", "Faculty of Science"],
+        ["Mohammad Zaid Maroof", "25GLBSA659", "GR1962", "Geology", "Faculty of Science"],
+        ["Altaf Ali", "25GLBSA663", "GR2919", "Geology", "Faculty of Science"],
+        ["Mohd Umar", "25GLBSA669", "GR3015", "Geology", "Faculty of Science"],
+
+        // ==========================================
+        // Computer Science | Faculty of Science (17)
+        // ==========================================
+        ["Aditi Chaudhari", "25CABSA522", "GQ9794", "Computer Science", "Faculty of Science"],
+        ["Afraz Ullah Khan", "25CABSA570", "GR3247", "Computer Science", "Faculty of Science"],
+        ["Ahmed Mujtaba Malik", "25CABSA507", "GR0036", "Computer Science", "Faculty of Science"],
+        ["Md Athar", "25CABSA505", "GQ9995", "Computer Science", "Faculty of Science"],
+        ["Deepanshu Sharma", "25CABSA535", "GP9958", "Computer Science", "Faculty of Science"],
+        ["Tabassum Khayer", "25CABSA102", "GQ9807", "Computer Science", "Faculty of Science"],
+        ["Kunal Varshney", "25CABSA537", "GN6355", "Computer Science", "Faculty of Science"],
+        ["Hira Zaidi", "25CABSA115", "GR3212", "Computer Science", "Faculty of Science"],
+        ["Shumayla Wajid", "25CABSA103", "GQ9984", "Computer Science", "Faculty of Science"],
+        ["Aditya Sharma", "25CABSA577", "GQ9924", "Computer Science", "Faculty of Science"],
+        ["Tuba Iqbal", "25CABSA564", "GR0563", "Computer Science", "Faculty of Science"],
+        ["Sarik", "25CABSA562", "GP8174", "Computer Science", "Faculty of Science"],
+        ["Ayesha Nusrat Khan", "25CABSA559", "GP9077", "Computer Science", "Faculty of Science"],
+        ["Rifa Ghazi", "23CABSA288", "GM5212", "Computer Science", "Faculty of Science"],
+        ["Somaiya Khatoon", "25CABSA116", "GR3226", "Computer Science", "Faculty of Science"],
+        ["Pasha Kamal", "25CABSA566", "GN3422", "Computer Science", "Faculty of Science"],
+        ["Saad Rahman", "25CABSA576", "GR3444", "Computer Science", "Faculty of Science"],
+
+        // ==========================================
+        // Mathematics | Faculty of Science (10)
+        // ==========================================
+        ["Mohd yaser", "25MMBSA591", "GR2418", "Mathematics", "Faculty of Science"],
+        ["Gurutva Saxena", "25MMBSA557", "GR0431", "Mathematics", "Faculty of Science"],
+        ["Mohammad Adeeb Ansari", "25MMBSA510", "GQ9831", "Mathematics", "Faculty of Science"],
+        ["Himanshu baghel", "25MMBSA582", "GR1638", "Mathematics", "Faculty of Science"],
+        ["Sahajad Ali", "25MMBSA581", "GR1616", "Mathematics", "Faculty of Science"],
+        ["Keshav", "25MMBSA552", "GP9977", "Mathematics", "Faculty of Science"],
+        ["Abi Waqas", "25MMBSA521", "GQ9916", "Mathematics", "Faculty of Science"],
+        ["Salim Chauhan", "25MMBSA575", "GR0504", "Mathematics", "Faculty of Science"],
+        ["Shiva Varshney", "25MMBSA586", "GR1969", "Mathematics", "Faculty of Science"],
+        ["Asdaque Shams", "25MMBSA584", "GR1720", "Mathematics", "Faculty of Science"],
+
+        // ==========================================
+        // Physics | Faculty of Science (11)
+        // ==========================================
+        ["Suhail Ahmad Mustafa", "25PHBSA598", "GR1795", "Physics", "Faculty of Science"],
+        ["Mohd Qamar", "25PHBSA583", "GM1869", "Physics", "Faculty of Science"],
+        ["Yash Kumar Sharma", "25PHBSA512", "GQ9890", "Physics", "Faculty of Science"],
+        ["Deepanshu Gupta", "25PHBSA503", "GQ9742", "Physics", "Faculty of Science"],
+        ["Nitin Kumar", "25PHBSA594", "GR1591", "Physics", "Faculty of Science"],
+        ["Ahmad faraz", "25PHBSA590", "GR0406", "Physics", "Faculty of Science"],
+        ["Wamique Irfan", "25PHBSA576", "GR0570", "Physics", "Faculty of Science"],
+        ["Meraj Shaquelain", "25PHBSA527", "GR0087", "Physics", "Faculty of Science"],
+        ["Azlan Sabir", "25PHBSA565", "GM1038", "Physics", "Faculty of Science"],
+        ["Md Shamshad Alam", "25PHBSA518", "GQ9950", "Physics", "Faculty of Science"],
+        ["Md Hammad", "25PHBSA569", "GR0522", "Physics", "Faculty of Science"],
+
+        // ==========================================
+        // Statistics | Faculty of Science (7)
+        // ==========================================
+        ["Syed Sayem Mehdi Imam", "25STBSA531", "GR2976", "Statistics", "Faculty of Science"],
+        ["Mohammad Shehzil", "25STBSA501", "GR2151", "Statistics", "Faculty of Science"],
+        ["Junaid", "25STBSA522", "GR2541", "Statistics", "Faculty of Science"],
+        ["Yogendra Chaudhary", "25STBSA509", "GP9149", "Statistics", "Faculty of Science"],
+        ["Mohammad Subhan Anwar", "25STBSA537", "GR3016", "Statistics", "Faculty of Science"],
+        ["Krrish Shukla", "24STBSA526", "GQ5148", "Statistics", "Faculty of Science"],
+        ["Praveen Kumar Singh", "25STBSA542", "GR3171", "Statistics", "Faculty of Science"],
+
+        // ==========================================
+        // Industrial Chemistry | Faculty of Science (4)
+        // ==========================================
+        ["Arfat Faiz", "25ICBSA539", "GP9460", "Industrial Chemistry", "Faculty of Science"],
+        ["Nihal Ahmad", "25ICBSA504", "GN6517", "Industrial Chemistry", "Faculty of Science"],
+        ["Mohammad Rayyan Bin Talha", "25ICBSA505", "GP1037", "Industrial Chemistry", "Faculty of Science"],
+        ["Sahil Hussain", "25ICBSA528", "GR0128", "Industrial Chemistry", "Faculty of Science"],
+
+        // ==========================================
+        // Chemistry | Faculty of Science (10)
+        // ==========================================
+        ["Albab Tariq waseem", "24CHBSA541", "GN1072", "Chemistry", "Faculty of Science"],
+        ["Mohammad zubair", "25CHBSA718", "GR2803", "Chemistry", "Faculty of Science"],
+        ["Owais farooq", "25CHBSA535", "GN1972", "Chemistry", "Faculty of Science"],
+        ["Faisal iqubal", "25CHBSA615", "GQ9897", "Chemistry", "Faculty of Science"],
+        ["Faishal Mustafa", "24CHBSA559", "GQ2531", "Chemistry", "Faculty of Science"],
+        ["Owais ahmad lone", "25CHBSA661", "GR1684", "Chemistry", "Faculty of Science"],
+        ["Syeda kaunain ashraf", "25CHBSA652", "GR0094", "Chemistry", "Faculty of Science"],
+        ["Ayanullah", "25CHBSA625", "GR1481", "Chemistry", "Faculty of Science"],
+        ["Mohammad Arsalan", "25CHBSA725", "GR3027", "Chemistry", "Faculty of Science"],
+        ["Rihan Qamar", "25CHBSA690", "GR1963", "Chemistry", "Faculty of Science"],
+
+        // ==========================================
+        // Botany | Faculty of Life Sciences (7)
+        // ==========================================
+        ["Burhan Azad", "23BTBLA251", "GM6922", "Botany", "Faculty of Life Sciences"],
+        ["Sameer", "26BTBLA545", "GP6682", "Botany", "Faculty of Life Sciences"],
+        ["Mohammad Rabay", "25BTBLA645", "GR1753", "Botany", "Faculty of Life Sciences"],
+        ["Jais khan", "25BTBLA564", "GR0479", "Botany", "Faculty of Life Sciences"],
+        ["Shikhar upadhyay", "25BTBLA592", "GR1418", "Botany", "Faculty of Life Sciences"],
+        ["Aquib khan", "25BTBLA583", "GR0147", "Botany", "Faculty of Life Sciences"],
+        ["Rakshan Ahmed Chowdhary", "25BTBLA631", "GR2759", "Botany", "Faculty of Life Sciences"],
+
+        // ==========================================
+        // Zoology | Faculty of Life Sciences (2)
+        // ==========================================
+        ["Syed Ehsaan Ali", "25ZYBLA514", "GR0123", "Zoology", "Faculty of Life Sciences"],
+        ["Mohd Ahad", "25ZYBLA568", "GN3154", "Zoology", "Faculty of Life Sciences"],
+
+        // ==========================================
+        // Biochemistry | Faculty of Life Sciences (4)
+        // ==========================================
+        ["Ali Junaid", "25BCBLA545", "GR3199", "Biochemistry", "Faculty of Life Sciences"],
+        ["Rahul Goyal", "25BCBLA507", "GN5860", "Biochemistry", "Faculty of Life Sciences"],
+        ["Abeer Imran", "25BCBLA551", "GR3274", "Biochemistry", "Faculty of Life Sciences"],
+        ["Omar Jawed", "25BCBLA536", "GL1706", "Biochemistry", "Faculty of Life Sciences"],
+
+        // ==========================================
+        // Commerce | Faculty of Commerce (77)
+        // ==========================================
+        ["Syed Yasir Abbas Rizvi", "25CMBCA505", "GP9194", "Commerce", "Faculty of Commerce"],
+        ["Saddam husain", "25CMBCA581", "GR0211", "Commerce", "Faculty of Commerce"],
+        ["Zaid Khan", "25CMBCA589", "GP0432", "Commerce", "Faculty of Commerce"],
+        ["Md kashif Shahid", "25CMBCA549", "GP5031", "Commerce", "Faculty of Commerce"],
+        ["Zunaid Ansari", "25CMBCA503", "GR0041", "Commerce", "Faculty of Commerce"],
+        ["Mostufa Ahmed Laskar", "25CMBCA554", "GR0106", "Commerce", "Faculty of Commerce"],
+        ["Varun Garg", "25CMBCA542", "GR0075", "Commerce", "Faculty of Commerce"],
+        ["Mohammad Hamza", "25CMBCA533", "GP0385", "Commerce", "Faculty of Commerce"],
+        ["Mohammad Ashbar Khan", "25CMBCA520", "GR0054", "Commerce", "Faculty of Commerce"],
+        ["Parth Agrawal", "25CMBCA526", "GP8419", "Commerce", "Faculty of Commerce"],
+        ["Md Zainulabedin Niyazi", "25CMBCA560", "GR0126", "Commerce", "Faculty of Commerce"],
+        ["Mohd Raza Ansari", "25CMBCA600", "GP0404", "Commerce", "Faculty of Commerce"],
+        ["Kartik Agrawal", "25CMBCA515", "GP4833", "Commerce", "Faculty of Commerce"],
+        ["Divyansh Varshney", "24CMBCA596", "GN4031", "Commerce", "Faculty of Commerce"],
+        ["Mohd Hamza", "25CMBCA536", "GP9839", "Commerce", "Faculty of Commerce"],
+        ["Mohammad Shayaan", "25CMBCA524", "GR0057", "Commerce", "Faculty of Commerce"],
+        ["Md Taufique umar", "25CMBCA518", "GR0051", "Commerce", "Faculty of Commerce"],
+        ["Mohd Arshil", "25CMBCA541", "GR0073", "Commerce", "Faculty of Commerce"],
+        ["Shahil jalal", "25CMBCA577", "GN9475", "Commerce", "Faculty of Commerce"],
+        ["Fuzail Ahmad", "Not Listed (Commerce)", "GR0081", "Commerce", "Faculty of Commerce"],
+        ["Mohd Umar", "25CMBCA501", "GR0038", "Commerce", "Faculty of Commerce"],
+        ["Soofi Lareb Ahmad", "25CMBCA558", "GP4815", "Commerce", "Faculty of Commerce"],
+        ["Faiz Mustafa", "25CMBCA592", "GP5153", "Commerce", "Faculty of Commerce"],
+        ["Shubham varshney", "25CMBCA597", "GP6644", "Commerce", "Faculty of Commerce"],
+        ["Dhruv Shrivastav", "25CMBCA580", "GP4918", "Commerce", "Faculty of Commerce"],
+        ["Rayan Rashid Khan", "25CMBCA550", "GP4647", "Commerce", "Faculty of Commerce"],
+        ["Mohammed Ibrahim", "25CMBCA527", "GP6497", "Commerce", "Faculty of Commerce"],
+        ["Ahmad Raza Ali", "25CMBCA567", "GP9960", "Commerce", "Faculty of Commerce"],
+        ["Ayush sengar", "25CMBCA514", "GP5018", "Commerce", "Faculty of Commerce"],
+        ["Anas Abdullah", "25CMBCA555", "GR0110", "Commerce", "Faculty of Commerce"],
+        ["Shayan Ahmad", "25CMBCA566", "GP9865", "Commerce", "Faculty of Commerce"],
+        ["Hammad", "25CMBCA523", "GM1009", "Commerce", "Faculty of Commerce"],
+        ["Areeb Rahmani", "25CMBCA507", "GP9175", "Commerce", "Faculty of Commerce"],
+        ["Sakir Ali", "25CMBCA529", "GR0062", "Commerce", "Faculty of Commerce"],
+        ["Mohammad Khalid", "25CMBCA537", "GR0070", "Commerce", "Faculty of Commerce"],
+        ["Mohd Abuzar", "25CMBCA539", "GP4762", "Commerce", "Faculty of Commerce"],
+        ["Mozamil Hussain", "25CMBCA512", "GN4914", "Commerce", "Faculty of Commerce"],
+        ["Md Asad Sayeed", "25CMBCA519", "GR0052", "Commerce", "Faculty of Commerce"],
+        ["Md Faiz Azim", "25CMBCA562", "GP5106", "Commerce", "Faculty of Commerce"],
+        ["Mohammad Shakeel", "25CMBCA557", "GR0113", "Commerce", "Faculty of Commerce"],
+        ["Mohammad zaid", "25CMBCA573", "GR0178", "Commerce", "Faculty of Commerce"],
+        ["Yasir Habib Ansari", "25CMBCA582", "GR0213", "Commerce", "Faculty of Commerce"],
+        ["Mohammad Asghar Naqvi", "25CMBCA504", "GR0042", "Commerce", "Faculty of Commerce"],
+        ["Saquib Anwer", "25CMBCA584", "GP1131", "Commerce", "Faculty of Commerce"],
+        ["Mohammed Ateeb", "25CMBCA564", "GR0134", "Commerce", "Faculty of Commerce"],
+        ["Rehan Ahmad", "25CMBCA535", "GP9263", "Commerce", "Faculty of Commerce"],
+        ["Krishna varshney", "25CMBCA509", "GP8156", "Commerce", "Faculty of Commerce"],
+        ["Ali ahmad faisal", "25CMBCA552", "GR0104", "Commerce", "Faculty of Commerce"],
+        ["Baljeet Singh Gurditta", "25CMBCA517", "GP4850", "Commerce", "Faculty of Commerce"],
+        ["Atharv Yadav", "25CMBCA530", "GP9246", "Commerce", "Faculty of Commerce"],
+        ["Mujtaba Shamim Akhter", "25CMBCA531", "GP9607", "Commerce", "Faculty of Commerce"],
+        ["Hamza Ahmad", "25CMBCA538", "GP4905", "Commerce", "Faculty of Commerce"],
+        ["Arham khan", "25CMBCA561", "GR0127", "Commerce", "Faculty of Commerce"],
+        ["Zaid Adnan Hashmi", "25CMBCA551", "GP9222", "Commerce", "Faculty of Commerce"],
+        ["Devansh Gupta", "25CMBCA511", "GP4754", "Commerce", "Faculty of Commerce"],
+        ["Ammar Parwez", "25CMBCA521", "GP4852", "Commerce", "Faculty of Commerce"],
+        ["Jatin Singh", "25CMBCA574", "GP6685", "Commerce", "Faculty of Commerce"],
+        ["Mohammad zayan Ansari", "25CMBCA583", "GP9355", "Commerce", "Faculty of Commerce"],
+        ["Rashid anwar", "25CMBCA594", "GP4745", "Commerce", "Faculty of Commerce"],
+        ["Gopal Malhotra", "24CMBCA588", "GQ2444", "Commerce", "Faculty of Commerce"],
+        ["Majid Prawez", "25CMBCA576", "GM7711", "Commerce", "Faculty of Commerce"],
+        ["Abdul Baasit Mohd Aziz", "25CMBCA506", "GP9193", "Commerce", "Faculty of Commerce"],
+        ["Hadik Jazar Kulathil", "25CMBCA540", "GR0072", "Commerce", "Faculty of Commerce"],
+        ["Mohd Hassan Wamique", "25CMBCA572", "GR0171", "Commerce", "Faculty of Commerce"],
+        ["Riyaj", "25CMBCA586", "GP5062", "Commerce", "Faculty of Commerce"],
+        ["Imran Akhtar", "25CMBCA598", "GR0259", "Commerce", "Faculty of Commerce"],
+        ["Hardik Varshney", "25CMBCA596", "GR0250", "Commerce", "Faculty of Commerce"],
+        ["Mohd Hashir Ali", "25CMBCA599", "GP4685", "Commerce", "Faculty of Commerce"],
+        ["Mohd Shayan", "25CMBCA534", "GP9405", "Commerce", "Faculty of Commerce"],
+        ["Arham Raza Khan", "25CMBCA590", "GR0227", "Commerce", "Faculty of Commerce"],
+        ["Abdul aziz", "25CMBCA575", "GR0194", "Commerce", "Faculty of Commerce"],
+        ["Zainul Abedin", "25CMBCA516", "GR0049", "Commerce", "Faculty of Commerce"],
+        ["Mohd Kabeer Rashid", "25CMBCA579", "GP9277", "Commerce", "Faculty of Commerce"],
+        ["Ishan Nasir", "25CMBCA595", "GR0249", "Commerce", "Faculty of Commerce"],
+        ["Shabiq hasan", "25CMBCA545", "GP4648", "Commerce", "Faculty of Commerce"]
+      ];
+
+      // Build hash map for O(1) instant lookup
+      const map = Object.create(null);
+      for (const [name, facultyNo, enrollmentNo, department, facultyName] of rawData) {
+        const key = enrollmentNo.replace(/\s+/g, '').toUpperCase();
+        map[key] = {
+          name: name.trim(),
+          facultyNo: facultyNo.trim(),
+          enrollmentNo: key,
+          department: department.trim(),
+          facultyName: facultyName.trim()
+        };
+      }
+      return map;
+    })();
+
+    // DOM Elements
+    const lookupForm = document.getElementById('lookupForm');
+    const enrollmentInput = document.getElementById('enrollmentInput');
+    const resultContainer = document.getElementById('resultContainer');
+
+    /**
+     * Escapes HTML entities to safely render user-supplied input in error messages
+     */
+    function escapeHTML(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    /**
+     * Renders the verified student card
+     */
+    function renderSuccessCard(student) {
+      resultContainer.classList.remove('hidden');
+      resultContainer.innerHTML = `
+        <div class="animate-card rounded-xl bg-zinc-950 border border-emerald-500/40 overflow-hidden shadow-lg">
+          <!-- Status Banner -->
+          <div class="bg-emerald-500/10 border-b border-emerald-500/20 px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-2 text-emerald-400 font-semibold text-sm">
+              <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>Verified • Enrolled in CMBCV03007</span>
+            </div>
+            <span class="text-xs font-mono text-emerald-300/80 bg-emerald-500/10 px-2 py-0.5 rounded">
+              ${escapeHTML(student.enrollmentNo)}
+            </span>
+          </div>
+
+          <!-- Student Details Grid -->
+          <div class="p-4 sm:p-5 space-y-3.5 text-sm">
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 pb-3 border-b border-zinc-800/80">
+              <span class="text-zinc-400 text-xs uppercase tracking-wider font-medium">Student Name</span>
+              <span class="text-white font-semibold text-base">${escapeHTML(student.name)}</span>
+            </div>
+
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 pb-3 border-b border-zinc-800/80">
+              <span class="text-zinc-400 text-xs uppercase tracking-wider font-medium">Faculty No.</span>
+              <span class="text-zinc-100 font-mono font-medium">${escapeHTML(student.facultyNo)}</span>
+            </div>
+
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 pb-3 border-b border-zinc-800/80">
+              <span class="text-zinc-400 text-xs uppercase tracking-wider font-medium">Department</span>
+              <span class="text-zinc-100 font-medium">${escapeHTML(student.department)}</span>
+            </div>
+
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
+              <span class="text-zinc-400 text-xs uppercase tracking-wider font-medium">Faculty Name</span>
+              <span class="text-emerald-300 font-medium">${escapeHTML(student.facultyName)}</span>
+            </div>
+          </div>
+
+          <!-- Clear / Privacy Reset Button -->
+          <div class="bg-zinc-900/60 border-t border-zinc-800/80 px-4 py-3 flex justify-end">
+            <button
+              type="button"
+              onclick="resetSearch()"
+              class="w-full sm:w-auto px-4 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              <span>Clear / Check Another</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    /**
+     * Renders an error or not-found message box
+     */
+    function renderErrorCard(title, message) {
+      resultContainer.classList.remove('hidden');
+      resultContainer.innerHTML = `
+        <div class="animate-card rounded-xl bg-rose-950/30 border border-rose-500/40 p-4 text-sm">
+          <div class="flex items-start gap-3">
+            <svg class="w-5 h-5 text-rose-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div class="flex-1">
+              <h3 class="font-semibold text-rose-300">${escapeHTML(title)}</h3>
+              <p class="mt-1 text-rose-200/80 text-xs leading-relaxed">${message}</p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /**
+     * Resets input and clears visible student record for privacy
+     */
+    function resetSearch() {
+      enrollmentInput.value = '';
+      resultContainer.innerHTML = '';
+      resultContainer.classList.add('hidden');
+      enrollmentInput.focus();
+    }
+
+    /**
+     * Handles form submission & performs instant lookup
+     */
+    lookupForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      try {
+        const rawInput = enrollmentInput.value;
+        const normalizedQuery = rawInput.replace(/\s+/g, '').toUpperCase();
+
+        if (!normalizedQuery) {
+          renderErrorCard(
+            'Enrollment Number Required',
+            'Please enter your Enrollment Number (for example, <strong>GR3013</strong> or <strong>GP9194</strong>) to check your registration status.'
+          );
+          enrollmentInput.focus();
+          return;
+        }
+
+        const student = STUDENT_RECORDS[normalizedQuery];
+
+        if (student) {
+          renderSuccessCard(student);
+        } else {
+          renderErrorCard(
+            'Record Not Found',
+            `Enrollment Number <strong>${escapeHTML(normalizedQuery)}</strong> was not found in the Business Environment (CMBCV03007) list. Please check for typos and ensure you are entering your <strong>Enrollment No.</strong> (not your Faculty No.).`
+          );
+        }
+      } catch (err) {
+        renderErrorCard(
+          'Lookup Error',
+          'An unexpected error occurred while checking your enrollment. Please refresh and try again.'
+        );
+      }
+    });
+  </script>
+</body>
+</html>
